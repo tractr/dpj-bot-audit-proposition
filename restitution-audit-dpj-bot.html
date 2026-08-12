@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>TRACTR × Boscoville : restitution d'audit DPJ-bot</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+  /* ===== TRACTR NÉO-BRUT : design tokens (NE PAS modifier sauf demande explicite) ===== */
+  :root{
+    --bg:#FDFDFD; --bg-alt:#F4F4FF; --card-bg:#ffffff;
+    --ink:#1a1a1a; --ink2:#1a1a1a; --muted:#5a5a5a; --faint:#5a5a5a;
+    --acc:#0000ff; --acc-soft:#E8E8FF; --acc-mid:#6666ff;
+    --pink:#ffdcf0; --pink-strong:#ffb8dd; --green:#B3F4D1; --yellow:#FFF2C8; --blue-light:#8BD8FD;
+    --border:#1a1a1a; --border-light:#d0d0d0;
+    --v1ink:#0a7d3a; --v2ink:#9a6207;
+    --r:3px;
+    --sh:4px 4px 0 var(--border-light);
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:'DM Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --display:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body::before{content:'';position:fixed;inset:0;opacity:.02;pointer-events:none;z-index:9999;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
+  .wrap{display:grid;grid-template-columns:264px 1fr;max-width:1180px;margin:0 auto;gap:0;background:var(--bg)}
+  aside{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:28px 20px;
+    border-right:2px solid var(--border);background:var(--bg)}
+  aside .brand{display:flex;flex-direction:column;gap:9px}
+  aside .brand .sb-title{font-family:var(--display);font-size:13.5px;line-height:1.35}
+  aside .brand .sb-blue{color:var(--acc);font-weight:700}
+  aside .brand .sb-reg{color:var(--muted);font-weight:400}
+  aside .brand .sb-bold{color:var(--ink);font-weight:700}
+  nav{margin-top:26px;display:flex;flex-direction:column;gap:2px}
+  nav a{color:var(--ink);text-decoration:none;font-size:13px;padding:7px 10px;border:2px solid transparent;
+    border-radius:var(--r);transition:.12s;display:flex;gap:9px;align-items:center;font-weight:500}
+  nav a .n{color:var(--acc);font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;min-width:16px}
+  nav a:hover{background:var(--acc-soft)}
+  nav a.active{background:var(--acc);color:#fff;border-color:var(--border);box-shadow:3px 3px 0 var(--border-light);font-weight:600}
+  nav a.active .n{color:#fff}
+  main{padding:28px 56px 90px;min-width:0}
+  .line-accent{width:56px;height:5px;background:var(--acc);margin:0 0 14px}
+  .cobrand{display:flex;align-items:center;gap:18px;margin:0 0 48px;padding:16px 20px;border:2px solid var(--border);border-radius:var(--r);box-shadow:var(--sh)}
+  .cobrand img{display:block;width:auto}
+  .cobrand .cb-tractr{height:26px}
+  .cobrand .cb-client{height:34px}
+  .cobrand .cb-x{font-family:var(--display);font-size:22px;color:var(--border-light);font-weight:400;line-height:1}
+  .cobrand .cb-word{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .eyebrow{display:inline-block;font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#fff;background:var(--acc);border:2px solid var(--border);padding:5px 12px;border-radius:var(--r);box-shadow:3px 3px 0 var(--border-light);margin-bottom:16px}
+  h1{font-family:var(--display);font-size:34px;letter-spacing:-.03em;margin:0 0 10px;font-weight:700;line-height:1.1}
+  .tagline{color:var(--ink2);font-size:16px;margin:0 0 12px;max-width:62ch;line-height:1.5}
+  .meta{color:var(--muted);font-size:12.5px;font-family:var(--mono);max-width:none}
+  h2{font-family:var(--display);font-size:24px;letter-spacing:-.02em;margin:54px 0 6px;font-weight:700;line-height:1.15;display:flex;align-items:center;gap:12px}
+  h2 .h2n{font-family:var(--display);font-size:14px;font-weight:700;color:#fff;background:var(--acc);min-width:40px;height:32px;padding:0 6px;
+    display:flex;align-items:center;justify-content:center;border:2px solid var(--border);border-radius:var(--r);box-shadow:3px 3px 0 var(--border-light);flex:none}
+  h3{font-family:var(--display);font-size:18px;margin:28px 0 8px;font-weight:600;letter-spacing:-.01em}
+  p{margin:11px 0;max-width:74ch}
+  .lead{color:var(--muted);max-width:64ch;font-size:15.5px}
+  code{font-family:var(--mono);font-size:.85em;background:var(--acc-soft);padding:2px 6px;border-radius:3px;color:var(--acc);border:1px solid var(--acc-mid)}
+  .card{background:var(--card-bg);border:2px solid var(--border);border-radius:var(--r);padding:18px 20px;margin:16px 0;box-shadow:var(--sh)}
+  .card.c-blue{background:var(--acc-soft)}.card.c-pink{background:var(--pink)}.card.c-green{background:var(--green)}.card.c-yellow{background:var(--yellow)}
+  .grid{display:grid;gap:12px}
+  .grid>.card{margin:0}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  .nav-burger{display:none;background:none;border:none;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px}
+  .nav-burger span{display:block;width:18px;height:2.5px;background:var(--ink);border-radius:2px}
+  .nav-label{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .nav-backdrop{display:none;position:fixed;inset:0;z-index:55;background:rgba(26,26,46,.35)}
+  @media(max-width:920px){.wrap{grid-template-columns:1fr}
+    .cobrand-wrap{position:sticky;top:0;z-index:50;background:var(--bg);margin:0 -22px 48px;padding:12px 22px 4px}
+    .cobrand{flex-wrap:wrap;row-gap:14px;position:relative;background:var(--card-bg);padding-left:74px;margin:0}
+    .nav-burger{display:flex;position:absolute;left:0;top:0;bottom:0;width:52px;border-right:2px solid var(--border);padding:0}
+    aside{position:fixed;left:0;top:0;z-index:60;height:100vh;width:272px;padding:28px 18px;background:var(--bg);transform:translateX(-110%);transition:transform .18s ease-out}
+    aside.open{transform:none}.nav-backdrop.show{display:block}
+    .g2,.g3{grid-template-columns:1fr}main{padding:28px 22px 90px}}
+  .pill{display:inline-block;font-family:var(--display);font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:var(--r);vertical-align:middle;letter-spacing:.04em;text-transform:uppercase;border:2px solid var(--border);white-space:nowrap}
+  .pill.v1{background:var(--green);color:#0a3d20}
+  .pill.v2{background:var(--yellow);color:#5c3d00}
+  .pill.man{background:#fff;color:var(--ink);border-style:dashed}
+  .pill.opt{background:var(--acc-soft);color:var(--acc)}
+  .pill.low{background:var(--green);color:#0a3d20}
+  .pill.mid{background:var(--yellow);color:#5c3d00}
+  .pill.high{background:var(--pink);color:#7a1340}
+  .pill.todo{background:#fff;color:var(--muted);border-style:dashed}
+  .feat{font-family:var(--display);font-size:11px;color:#fff;background:var(--acc);padding:1px 7px;border-radius:3px;font-weight:700;white-space:nowrap}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0;background:var(--card-bg);border:2px solid var(--border);box-shadow:var(--sh)}
+  th{font-family:var(--display);background:var(--acc);color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;text-align:left;padding:9px 13px;border-bottom:2px solid var(--border)}
+  td{text-align:left;padding:9px 13px;border-bottom:1.5px solid var(--border-light);vertical-align:top}
+  tbody tr:last-child td,table tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:var(--bg-alt)}
+  tr.total-row td{background:var(--acc-soft);border-top:2px solid var(--border);font-family:var(--display)}
+  .ok{color:var(--v1ink);font-weight:600}.warn{color:var(--v2ink);font-weight:600}.bad{color:#cc0000;font-weight:600}.mut{color:var(--muted)}
+  ul{margin:8px 0;padding-left:20px}li{margin:6px 0;max-width:74ch}
+  .callout{border:2px solid var(--border);background:var(--acc-soft);padding:14px 18px;border-radius:var(--r);margin:18px 0;font-size:14px;color:var(--ink2);box-shadow:var(--sh)}
+  .callout.v1{background:var(--green)}.callout.v2{background:var(--yellow)}.callout.warn{background:var(--pink)}
+  .callout b{color:var(--ink)}
+  .callout p{max-width:none}
+  /* stack de couches techniques (présentation de technos / briques) */
+  .stack{display:flex;flex-direction:column;gap:12px}
+  .layer{display:grid;grid-template-columns:170px 1fr;gap:18px;align-items:center;background:var(--card-bg);
+    border:2px solid var(--border);border-radius:var(--r);padding:14px 18px;box-shadow:var(--sh)}
+  .layer .tech{font-family:var(--display);font-weight:700;font-size:15px}
+  .layer .tech small{display:block;color:var(--muted);font-weight:500;font-family:var(--mono);font-size:11px;margin-top:3px}
+  .layer .tech .techlogo{width:36px;height:36px;border-radius:8px;display:block;margin-bottom:8px;border:2px solid var(--border);object-fit:contain;background:#fff}
+  .layer .why{font-size:13.5px;color:var(--muted);max-width:none}
+  .techlink{font-family:var(--display);font-size:11px;font-weight:600;color:var(--acc);text-decoration:none;border:1.5px solid var(--acc);border-radius:3px;padding:1px 7px;margin-left:6px;white-space:nowrap}
+  .techlink:hover{background:var(--acc-soft)}
+  /* scopebox : périmètre inclus / exclu (hors scope, post-MVP) */
+  .scopebox{border:2px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .scopebox.out{background:var(--yellow)}
+  .scopebox h3{margin:0 0 10px;font-size:15px}
+  /* phase : ligne de phasage (libellé | description | durée) */
+  .phase{display:grid;grid-template-columns:104px 1fr auto;gap:18px;align-items:start;padding:14px 0;border-bottom:1.5px solid var(--border-light)}
+  .phase:last-child{border-bottom:none}
+  .phase .p{font-family:var(--display);font-weight:700;color:var(--acc)}
+  .phase .d{font-family:var(--mono);font-size:12px;color:var(--ink);white-space:nowrap;background:var(--acc-soft);padding:3px 9px;border-radius:3px;border:2px solid var(--border)}
+  /* steps : étapes numérotées (prochaines étapes) */
+  .steps{display:grid;gap:14px;margin:16px 0}
+  .step{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:var(--card-bg);border:2px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh)}
+  .step .num{width:36px;height:36px;border-radius:50%;background:var(--acc);color:#fff;font-family:var(--display);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;border:2px solid var(--border);box-shadow:2px 2px 0 var(--border-light);flex:none}
+  .step .txt{font-size:13.5px;color:var(--ink2);max-width:none}
+  .step .txt b{font-family:var(--display)}
+  .step .when{font-family:var(--mono);font-size:11px;color:var(--ink);background:var(--acc-soft);padding:4px 10px;border-radius:3px;border:2px solid var(--border);white-space:nowrap}
+  @media(max-width:560px){.step{grid-template-columns:auto 1fr}.step .when{grid-column:2;justify-self:start;margin-top:4px}}
+  /* total budget (encadré accent plein) */
+  .tot{display:flex;justify-content:space-between;align-items:baseline;background:var(--acc);color:#fff;
+    border:2px solid var(--border);border-radius:var(--r);padding:16px 22px;margin-top:16px;box-shadow:4px 4px 0 var(--border-light)}
+  .tot .mut{color:rgba(255,255,255,.82)}
+  .tot b{font-family:var(--display);font-size:19px;letter-spacing:-.01em}
+  .erd{font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre;overflow:auto;
+    background:var(--card-bg);border:2px solid var(--border);border-radius:var(--r);padding:18px;color:var(--ink2);box-shadow:var(--sh)}
+  .note{font-size:12.5px;color:var(--muted);font-style:italic;max-width:74ch}
+  .kpicards .card{margin:0;border-top:5px solid var(--acc)}
+  .kpicards .lbl{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--acc);text-transform:uppercase}
+  /* tiroir : option à la carte (devis à tiroir) */
+  .tiroir{border:2px solid var(--border);border-radius:var(--r);padding:16px 18px;margin:14px 0;background:var(--card-bg);box-shadow:var(--sh);display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+  .tiroir .t{font-family:var(--display);font-weight:700;font-size:15px;margin-bottom:3px}
+  .tiroir .desc{font-size:13px;color:var(--muted)}
+  .tiroir .price{font-family:var(--display);font-size:13px;font-weight:700;color:#fff;white-space:nowrap;background:var(--acc);padding:6px 12px;border-radius:3px;border:2px solid var(--border);text-align:center}
+  .tiroir .price.todo{color:var(--muted);background:#fff;border:2px dashed var(--border-light)}
+  /* startbox : encadré "on commence ici" (point d'entrée mis en avant) */
+  .startbox{border:2px solid var(--border);border-radius:var(--r);box-shadow:5px 5px 0 var(--acc-mid);background:var(--acc-soft);padding:4px 22px 20px;margin:18px 0}
+  .ico{width:17px;height:17px;vertical-align:-3px;margin-right:8px;fill:none;stroke:var(--acc);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .facts{display:flex;gap:34px;flex-wrap:wrap;margin:16px 0}
+  .fact .n{font-family:var(--display);font-size:26px;font-weight:700;color:var(--acc);line-height:1.05}
+  .fact .l{font-size:12.5px;color:var(--muted);margin-top:4px;max-width:26ch}
+  .logos{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:12px;margin:10px 0 0;max-width:780px}
+  .logos .lg{background:#fff;border:2px solid var(--border);border-radius:3px;box-shadow:2px 2px 0 var(--border-light);height:58px;display:flex;align-items:center;justify-content:center;padding:10px;transition:.12s}
+  .logos a.lg:hover{box-shadow:3px 3px 0 var(--acc-mid);transform:translate(-1px,-1px)}
+  .logos .lg img{max-height:30px;max-width:100%;width:auto;object-fit:contain}
+  .team{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+  .tcard{display:grid;grid-template-columns:auto 1fr;gap:14px;background:var(--card-bg);border:2px solid var(--border);border-radius:3px;box-shadow:var(--sh);padding:16px}
+  .tcard .av{width:54px;height:54px;border-radius:50%;border:2px solid var(--acc);background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--acc);font-size:16px;overflow:hidden;flex:none}
+  .tcard .av img{width:100%;height:100%;object-fit:cover}
+  .tcard .nm{font-family:var(--display);font-weight:700;font-size:15px}
+  .tcard .rl{font-size:12px;color:var(--acc);font-weight:600;font-family:var(--display);margin:2px 0 6px}
+  .tcard .bio{font-size:12.5px;color:var(--muted);line-height:1.5}
+  .tcard .bio .role-line{display:block;margin-top:8px}
+  @media(max-width:920px){.team{grid-template-columns:1fr}}
+  a:focus-visible,nav a:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+  .side-foot{margin-top:22px;padding-top:16px;border-top:2px solid var(--border);font-size:12px;font-family:var(--display)}
+  .side-foot a{display:block;color:var(--acc);text-decoration:none;font-weight:600;word-break:break-all}
+  .side-foot a:hover{text-decoration:underline}
+  main a{color:var(--acc);font-weight:600}
+  /* Navigation à deux niveaux : le document courant contient son propre sommaire. */
+  .docnav{display:flex;flex-direction:column;gap:9px;margin:18px 0 0}
+  .docgroup{background:#fff;border:2px solid var(--border);border-radius:var(--r);
+    box-shadow:2px 2px 0 var(--border-light);overflow:hidden}
+  .docgroup.is-current{box-shadow:3px 3px 0 var(--acc-mid)}
+  .doclink{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;
+    padding:10px 11px;color:var(--ink);background:#fff;text-decoration:none;font-family:var(--display);
+    font-size:11.5px;font-weight:700;line-height:1.35;transition:.12s}
+  .doclink[aria-current="page"]{background:var(--acc);color:#fff}
+  .doclink:not([aria-current="page"]):hover{background:var(--acc-soft)}
+  .doclink:active{transform:translate(1px,1px)}
+  .doc-index{font-variant-numeric:tabular-nums;color:var(--acc)}
+  .doclink[aria-current="page"] .doc-index{color:#fff}
+  .doclink::after{content:"+";font-size:16px;line-height:1;color:var(--acc)}
+  .docgroup.is-current>.doclink::after{content:"−";color:#fff}
+  nav.subnav{margin:0;padding:8px 8px 10px;gap:1px;background:#fff;border-top:2px solid var(--border)}
+  nav.subnav a{padding:7px 9px;border:0;border-radius:0;
+    font-size:12.5px;font-weight:500;box-shadow:none;background:transparent}
+  nav.subnav a:hover{background:var(--acc-soft)}
+  nav.subnav a.active{background:var(--acc-soft);color:var(--acc);box-shadow:none;font-weight:700}
+  nav.subnav a.active .n{color:var(--acc)}
+  @media print{.docnav{display:none}}
+  @media(max-width:920px){
+    main table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    main table>tbody{display:table;width:100%;border-collapse:collapse}
+  }
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  .quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:14px 0}
+  .quote{display:flex;flex-direction:column;background:var(--card-bg);border:2px solid #D4A017;border-radius:var(--r);box-shadow:4px 4px 0 #F0DFA0;padding:16px 18px}
+  .quote p{font-size:13px;font-style:italic;color:var(--ink2);margin:0 0 12px;max-width:none;flex:1}
+  .qfoot{display:flex;align-items:center;gap:10px}
+  .qav{width:38px;height:38px;border-radius:50%;border:2px solid var(--border);background:var(--acc-soft);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--acc);font-size:13px}
+  .qav img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
+  .qmeta{display:flex;flex-direction:column;line-height:1.25}
+  .qn{font-family:var(--display);font-weight:700;font-size:12.5px;color:var(--ink)}
+  .qc{font-size:11px;color:var(--muted)}
+  @media(max-width:920px){.quotes{grid-template-columns:1fr}}
+  details.fold{border:2px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin:16px 0;background:var(--card-bg)}
+  details.fold>summary{cursor:pointer;list-style:none;padding:13px 18px;font-family:var(--display);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--acc-soft)}
+  details.fold>summary::-webkit-details-marker{display:none}
+  details.fold>summary::after{content:"+";font-family:var(--display);font-size:18px;color:var(--acc);font-weight:700;line-height:1}
+  details.fold[open]>summary::after{content:"–"}
+  details.fold>summary:hover{background:#dcdcff}
+  details.fold .fold-body{padding:2px 18px 16px}
+  details.fold .fold-body>:first-child{margin-top:6px}
+  @media print{aside{display:none}.wrap{grid-template-columns:1fr}main{padding:0}body::before{display:none}
+    .card,.layer,.scopebox,.tiroir,table,.erd,.tot,.callout,details.fold,.startbox,.step{box-shadow:none}h2{break-after:avoid}table,.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav-backdrop" id="navBackdrop"></div>
+  <aside>
+    <div class="nav-label">Navigation</div>
+    <div class="docnav" role="navigation" aria-label="Documents de la restitution">
+      <div class="docgroup is-current">
+        <a class="doclink" href="restitution-audit-dpj-bot.html" aria-current="page"><span><span class="doc-index">1.&nbsp;</span>Audit de l'existant</span></a>
+        <nav id="nav" class="subnav" aria-label="Dans la restitution d'audit">
+          <a href="#verdict"><span class="n">1.1</span>Verdict et méthode</a>
+          <a href="#diagnostic"><span class="n">1.2</span>Le diagnostic</a>
+          <a href="#securite"><span class="n">1.3</span>Sécurité et conformité</a>
+          <a href="#qualite"><span class="n">1.4</span>Qualité et mesure</a>
+          <a href="#plan"><span class="n">1.5</span>Plan recommandé</a>
+          <a href="#decisions"><span class="n">1.6</span>Décisions à trancher</a>
+          <a href="#preuve"><span class="n">1.7</span>Preuves et limites</a>
+        </nav>
+      </div>
+      <div class="docgroup">
+        <a class="doclink" href="proposition-dpj-bot.html"><span><span class="doc-index">2.&nbsp;</span>Plan d'amélioration</span></a>
+      </div>
+    </div>
+    <div class="side-foot"><a href="mailto:pierre@tractr.net">pierre@tractr.net</a><a href="mailto:olivier@tractr.net">olivier@tractr.net</a></div>
+  </aside>
+
+  <main>
+    <div class="cobrand-wrap">
+    <div class="cobrand">
+      <button class="nav-burger" id="navBurger" aria-label="Ouvrir la navigation"><span></span><span></span><span></span></button>
+      <img class="cb-tractr" src="logo-tractr.png" alt="TRACTR">
+      <span class="cb-x">×</span>
+      <span class="cb-word">Boscoville</span>
+      <span class="eyebrow" style="margin:0 0 0 auto">Restitution d'audit</span>
+    </div>
+    </div>
+    <h1>1. Audit de l'existant</h1>
+    <p class="tagline">Constats vérifiés, mesures obtenues et limites de l'audit.</p>
+    <p class="meta">TRACTR pour Boscoville · juillet 2026</p>
+    <div class="line-accent" style="margin:20px 0 0"></div>
+
+    <!-- ============ 1 VERDICT ============ -->
+    <h2 id="verdict"><span class="h2n">1.1</span>Verdict et méthode</h2>
+    <p>Nous avons analysé le code et reproduit les constats techniques : découpage des 961 pages, requêtes de recherche, coûts, citations, contrastes, installation, compilation et dépendances. Aucun changement n'a été apporté au dépôt et aucun appel payant au modèle n'a été effectué.</p>
+    <p>La qualité métier des réponses n'a pas été notée, car les résultats varient encore d'une exécution à l'autre.</p>
+    <p>Le service est encore en ligne et non corrigé. Les détails permettant de reproduire une attaque sont réservés aux personnes chargées du correctif.</p>
+
+    <h3>Ce qui fonctionne</h3>
+    <p>Les numéros de page du manuel et du PDF correspondent. Les réponses sont rattachées aux sources et le système prévoit de signaler l'incertitude. La base est bien dimensionnée, la compilation passe et aucun secret n'est présent dans le dépôt.</p>
+
+    <h3>Ce qui ne fonctionne pas</h3>
+    <p>Trois blocages empêchent actuellement une ouverture au public.</p>
+    <div class="grid g3 kpicards">
+      <div class="card"><div class="lbl">Blocage 1</div><b style="font-size:17px">Intégrité du corpus</b><p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Le contenu interrogé peut être altéré depuis l'extérieur, puis présenté comme provenant du manuel.</p></div>
+      <div class="card"><div class="lbl">Blocage 2</div><b style="font-size:17px">Découpage inopérant</b><p style="margin:6px 0 0;font-size:13px;color:var(--muted)">C'est la cause mesurée de la confusion entre notions voisines.</p></div>
+      <div class="card"><div class="lbl">Blocage 3</div><b style="font-size:17px">Conformité absente</b><p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Confidentialité, transparence sur l'IA et situations de danger ne sont pas traitées.</p></div>
+    </div>
+
+    <h3>Conclusion</h3>
+    <div class="callout warn"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><b>Non ouvrable au public en l'état.</b> L'architecture est récupérable, mais ces trois blocages doivent être levés. Aucun n'impose de repartir de zéro.</div>
+
+    <!-- ============ 2 DIAGNOSTIC ============ -->
+    <h2 id="diagnostic"><span class="h2n">1.2</span>Le diagnostic, composant par composant</h2>
+    <p class="lead">État et correctif recommandé pour chaque composant.</p>
+
+    <table>
+      <tr><th scope="col">Composant</th><th scope="col">État</th><th scope="col">Constat</th><th scope="col">Direction</th></tr>
+      <tr><td><b>Extraction du PDF</b></td><td><span class="bad">Cassé</span></td><td>Le texte est reconstitué sans aucun saut de ligne. Toute la logique de découpage en paragraphes, écrite juste après, ne peut donc jamais se déclencher.</td><td>Restaurer les sauts de ligne depuis la géométrie du PDF</td></tr>
+      <tr><td><b>Découpage</b></td><td><span class="bad">Cassé</span></td><td>Conséquence directe : un fragment vaut environ une page entière. Cible visée 550 caractères, mesuré 2 442 en médiane, 864 fragments sur 904 dépassent le maximum prévu.</td><td>Vrai découpage parent-enfant, sur les frontières de sous-section</td></tr>
+      <tr><td><b>Étiquetage des fiches</b></td><td><span class="bad">Cassé</span></td><td><b>15 étiquettes de fiche pour 45 fiches réelles.</b> L'étiquette « fiche 5.1, le signalement » couvre 105 pages et absorbe les fiches 5.2 à 5.6, soit la réception, l'évaluation et l'orientation.</td><td>Reconstruire la structure depuis les en-têtes courants du PDF</td></tr>
+      <tr><td><b>Contexte adjacent</b></td><td><span class="bad">Cassé</span></td><td>17 contextes distincts pour 904 fragments, un même contexte partagé par jusqu'à 121 fragments. <b>Seuls 11 fragments sur 904</b> reçoivent un contexte issu de leur propre page.</td><td>Le contexte devient la sous-section réelle</td></tr>
+      <tr><td><b>Recherche par mots-clés</b></td><td><span class="bad">Cassé</span></td><td>Les termes de la question sont combinés en ET : il faut qu'une même ligne contienne tous les mots pour ressortir. Résultat mesuré, 1 à 3 lignes sur 904. Aucun index dédié, 76,8 ms par requête.</td><td>Combinaison en OU classée par pertinence, plus index dédié</td></tr>
+      <tr><td><b>Recherche vectorielle</b></td><td><span class="warn">À corriger</span></td><td>L'index existe, mais la requête ne l'utilise pas. Sans effet visible à 904 fragments, ce défaut deviendra bloquant à plus grande échelle.</td><td>Réécrire la requête pour activer l'index</td></tr>
+      <tr><td><b>Reclassement des résultats</b></td><td><span class="bad">Désactivé</span></td><td>Le code existe, il est désactivé en dur dans le fichier. Il n'est jamais exécuté.</td><td>Remplacer par un modèle de reclassement dédié, plus rapide et plus fiable</td></tr>
+      <tr><td><b>Abstention</b></td><td><span class="bad">Inatteignable</span></td><td>La consigne de dire « je ne sais pas » se déclenche « si la recherche ne retourne aucun extrait ». Or la recherche en retourne toujours cinq. La branche ne peut pas s'activer.</td><td>Abstention sur un score de confiance calibré sur données</td></tr>
+      <tr><td><b>Citations de page</b></td><td><span class="bad">Cassé</span></td><td>Tout nombre écrit par le modèle devient un lien vers le PDF gouvernemental, sans aucune validation. Testé 5 fois sur 5, y compris une page 12345 dans un document de 961 pages.</td><td>Liste blanche des pages réellement consultées, côté serveur</td></tr>
+      <tr><td><b>Pagination</b></td><td><span class="ok">Bon</span></td><td>La correspondance entre page imprimée et page du fichier est exacte. Une détection secondaire, plus fragile, prend le pas sur elle et produit 8 folios faux sur 293 pages testables.</td><td>Faire primer le calcul fiable, garder la détection en contrôle</td></tr>
+      <tr><td><b>Reproductibilité</b></td><td><span class="bad">Absente</span></td><td>Aucune température fixée sur les trois appels au modèle. La reformulation de la question est donc aléatoire, et avec elle toute la recherche. Deux exécutions de la même question donnent des pages différentes.</td><td>Température à zéro, jeu d'évaluation en intégration continue</td></tr>
+      <tr><td><b>Socle applicatif</b></td><td><span class="warn">Obsolète</span></td><td>La version utilisée est en fin de vie depuis octobre 2025 et ne reçoit plus de correctifs de sécurité.</td><td>Migrer vers une version maintenue</td></tr>
+    </table>
+
+    <div class="card">
+      <h3 style="margin-top:0">La preuve du problème d'étiquetage, telle qu'elle sort du pipeline</h3>
+      <p>Le code de découpage appliqué au PDF produit cette contradiction :</p>
+      <div class="erd">page 538 du fichier  |  étiquette posée : fiche 5.1
+   TEXTE : "Section 5 - Fiche 5.6  503  L'ORIENTATION : LE RÉGIME VOLONTAIRE..."</div>
+      <p>Le fragment traite de l'orientation, mais il est indexé comme du signalement. <b>Le modèle reçoit donc une mauvaise étiquette et un contexte hors sujet.</b> C'est la cause de la confusion signalée.</p>
+    </div>
+
+    <!-- ============ 3 SÉCURITÉ ============ -->
+    <h2 id="securite"><span class="h2n">1.3</span>Sécurité et conformité</h2>
+    <p class="lead">Dix vulnérabilités documentées. Les quatre premières sont bloquantes pour une ouverture publique.</p>
+
+    <div class="grid g2">
+      <div class="card c-pink"><h3 style="margin-top:0">Corpus modifiable</h3><p style="font-size:13px;color:var(--ink2);margin-bottom:0">Sans authentification, du contenu externe peut être ajouté puis servi comme provenant du manuel. Cette écriture publique peut être retirée sans effet fonctionnel.</p></div>
+      <div class="card c-pink"><h3 style="margin-top:0">Usage non borné</h3><p style="font-size:13px;color:var(--ink2);margin-bottom:0">Aucun contrôle d'accès ni limite de volume. Un abus peut coûter des milliers de dollars par heure. Le plafond fournisseur est la seule protection immédiate.</p></div>
+      <div class="card c-pink"><h3 style="margin-top:0">Prompt contournable</h3><p style="font-size:13px;color:var(--ink2);margin-bottom:0">Un appelant peut neutraliser les règles de refus et de confidentialité, puis produire du contenu arbitraire sous le logotype gouvernemental.</p></div>
+      <div class="card c-pink"><h3 style="margin-top:0">Citations non validées</h3><p style="font-size:13px;color:var(--ink2);margin-bottom:0">Cinq références inventées sur cinq sont devenues des liens, dont une page 9999 dans un PDF de 961 pages.</p></div>
+    </div>
+    <p class="note">Le statut de prototype et le blocage de l'indexation par les moteurs de recherche ne protègent pas un service accessible par son adresse.</p>
+
+    <h3>Sécurité des personnes</h3>
+    <div class="callout v2"><svg class="ico" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><b>Constat :</b> aucune règle ne traite une situation de danger et aucun numéro d'urgence n'est affiché. Nous recommandons une règle dédiée et un encadré avec les ressources québécoises, à valider par votre expert.</div>
+    <p>Le prompt masque aussi la nature automatisée du système. Nous recommandons de l'afficher explicitement.</p>
+
+    <h3>Protection des renseignements personnels</h3>
+    <table>
+      <tr><th scope="col">Point</th><th scope="col">Constat</th></tr>
+      <tr><td>Évaluation des facteurs relatifs à la vie privée</td><td>Aucune preuve présente dans le dépôt, alors que chaque message part vers un fournisseur situé hors du Québec.</td></tr>
+      <tr><td>Avis de confidentialité</td><td>Absent. À rédiger et à valider par votre conseil juridique.</td></tr>
+      <tr><td>Journalisation</td><td>Les 80 premiers caractères des questions ayant échoué sont écrits dans les journaux.</td></tr>
+      <tr><td>Historique local</td><td>Conservé en clair dans le navigateur, sans expiration, et le titre de chaque conversation est la question posée. Visible par le suivant sur un poste partagé.</td></tr>
+      <tr><td>Sous-traitance</td><td>Entente à formaliser. Points à instruire : rétention des journaux de détection d'abus, options de rétention réduite, et résidence des données au Canada, qui est disponible.</td></tr>
+      <tr><td>Logotype gouvernemental</td><td>Affiché, avec un avatar « DPJ ». Autorisation d'usage à établir.</td></tr>
+      <tr><td>Accessibilité</td><td>Les réponses ne sont pas annoncées aux lecteurs d'écran. Un bouton de suppression mesure 22 pixels, sous le minimum de 24 exigé au niveau AA.</td></tr>
+    </table>
+    <p class="note">Nous ne sommes pas votre conseil juridique. Ces constats sont techniques et documentaires ; leur qualification au regard de la Loi 25 vous appartient, avec votre conseil.</p>
+
+    <!-- ============ 4 QUALITÉ ============ -->
+    <h2 id="qualite"><span class="h2n">1.4</span>Qualité et mesure</h2>
+    <p class="lead">Aucune note métier fiable ne peut encore être produite.</p>
+
+    <div class="callout"><b>Le système n'est pas reproductible.</b> Les appels au modèle n'ont pas de température fixée. Une même question peut donc ramener des pages différentes, ce qui invalide toute note comparative.</div>
+    <p>La consigne de répondre en deux à quatre courts paragraphes peut aussi tronquer des énumérations juridiques. Elle doit être assouplie.</p>
+
+    <h3>Ce qu'il faut pour rendre le système mesurable</h3>
+    <p>Il faut <b>30 questions ancrées dans le manuel</b>, avec sources attendues, contenu obligatoire, interdits et cas d'abstention : 8 notions voisines, 5 exceptions, 5 seuils chiffrés, 5 articulations, 4 hors périmètre et 3 pièges.</p>
+    <p>Trois seuils sont non négociables avant l'ouverture :</p>
+    <table>
+      <tr><th scope="col">Mesure</th><th scope="col">Seuil</th><th scope="col">Pourquoi</th></tr>
+      <tr><td>Exactitude des citations</td><td><b>1,00</b></td><td>Aucun mécanisme en aval ne rattrape une citation fausse une fois affichée</td></tr>
+      <tr><td>Taux de citation inventée</td><td><b>0,00</b></td><td>Même raison, mesurée à l'envers</td></tr>
+      <tr><td>Silence sur une notion inexistante</td><td><b>1,00</b></td><td>Le système doit pouvoir dire qu'il ne sait pas</td></tr>
+    </table>
+
+    <h3>Autres constats</h3>
+    <table>
+      <tr><th scope="col">Point</th><th scope="col">Constat</th></tr>
+      <tr><td><b>Fonctions inactives</b></td><td>Le reclassement est désactivé, la recherche par mots-clés est presque vide et le découpage structurel ne s'exécute pas.</td></tr>
+      <tr><td><b>Panne trompeuse</b></td><td>Si la base échoue, l'usager lit que l'information est absente du manuel.</td></tr>
+      <tr><td><b>Erreurs invisibles</b></td><td>Le chargement disparaît sans message ni bouton pour réessayer ou arrêter.</td></tr>
+    </table>
+
+    <!-- ============ 5 PLAN ============ -->
+    <h2 id="plan"><span class="h2n">1.5</span>Plan recommandé</h2>
+    <p class="lead">Quatre étapes. Les heures sont des estimations techniques, pas une proposition commerciale.</p>
+
+    <table>
+      <tr><th scope="col">Étape</th><th scope="col">Résultat attendu</th><th scope="col">Effort</th><th scope="col">Quand</th></tr>
+      <tr><td><b>1. Protéger</b></td><td>Fermer l'écriture publique, borner les dépenses et les accès, limiter les requêtes et valider les pages citées.</td><td><span class="pill low">6,5&nbsp;h</span></td><td>Immédiatement</td></tr>
+      <tr><td><b>2. Mesurer</b></td><td>Créer 30 questions avec votre expert, automatiser les mesures et établir la situation de départ.</td><td><span class="pill mid">15&nbsp;h</span></td><td>Dès le début, en parallèle</td></tr>
+      <tr><td><b>3. Corriger avant l'ouverture</b></td><td>Réparer le corpus et la recherche, calibrer l'abstention, puis traiter sécurité, conformité, fiabilité, accessibilité et exploitation.</td><td><span class="pill high">68&nbsp;h</span></td><td>Avant l'ouverture</td></tr>
+      <tr><td><b>4. Consolider</b></td><td>Ajouter les tests, les retours des usagers, les procédures d'incident et la documentation. Supprimer le code mort.</td><td><span class="pill mid">27&nbsp;h</span></td><td>Après l'ouverture</td></tr>
+    </table>
+
+    <p class="note">Ce tableau restitue l'estimation technique initiale par chantier. Le budget consolidé et contractuel figure dans le plan d'amélioration. Le découpage et la recherche par mots-clés doivent être réparés ensemble. Le routage par fiche et le changement de modèle d'encodage ne se décident qu'après mesure.</p>
+    <div class="callout"><b>Conditions d'ouverture :</b> étapes 1 à 3 terminées, seuils atteints, volet juridique traité et 30 réponses validées par votre expert. La vie privée et l'autorisation du logotype peuvent dépasser six semaines, elles doivent commencer immédiatement.</div>
+
+    <!-- ============ 6 DÉCISIONS ============ -->
+    <h2 id="decisions"><span class="h2n">1.6</span>Décisions à trancher</h2>
+    <p class="lead">Quatre arbitrages vous reviennent. Le premier structure toute la suite.</p>
+
+    <table>
+      <tr><th scope="col">Décision</th><th scope="col">Options</th><th scope="col">Notre avis</th></tr>
+      <tr><td><b>Édition du manuel</b></td><td>Conserver le corpus de 2010, ou l'actualiser</td><td>La loi a changé depuis 2010. Afficher la date dans tous les cas. Si le corpus reste figé, refuser de répondre sur le droit postérieur. Une actualisation exige plusieurs sources et leurs versions, estimées à 10 h supplémentaires.</td></tr>
+      <tr><td><b>Consentement à l'entrée</b></td><td>Demander une acceptation, ou informer simplement</td><td>À trancher avec votre conseil juridique.</td></tr>
+      <tr><td><b>Logotype gouvernemental</b></td><td>Obtenir l'autorisation, ou le retirer</td><td>Le retirer jusqu'à autorisation pour éviter une apparence officielle.</td></tr>
+      <tr><td><b>Modèle de génération</b></td><td>Conserver l'actuel, ou migrer</td><td>Le modèle actuel date de mai 2024. Comparer qualité, coût et vitesse avant de changer.</td></tr>
+    </table>
+
+    <!-- ============ 7 PREUVE ============ -->
+    <h2 id="preuve"><span class="h2n">1.7</span>Preuves et limites</h2>
+    <p class="lead">Preuves obtenues et limites restantes.</p>
+
+    <table>
+      <tr><th scope="col">Niveau</th><th scope="col">Éléments</th></tr>
+      <tr><td><span class="ok">Démontré</span></td><td>Découpage, étiquetage, recherches PostgreSQL, citations, coûts, contrastes, dépendances et configuration publique.</td></tr>
+      <tr><td><span class="warn">À confirmer</span></td><td>Capacité à refuser une question hors manuel. La règle actuelle est inatteignable, mais le comportement du modèle reste à tester.</td></tr>
+      <tr><td><b>Non vérifié</b></td><td>Réponses métier, seuil de similarité, charge, consoles Vercel et Neon, lecteur d'écran et téléphone.</td></tr>
+    </table>
+
+    <div class="callout"><svg class="ico" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><b>Contact :</b> Pierre Cabrière, <a href="mailto:pierre@tractr.net">pierre@tractr.net</a>. Chaque mesure est reproductible.</div>
+  </main>
+</div>
+
+<script>
+/* Navigation : surligne l'entrée active au scroll + scroll doux au clic. NE PAS modifier. */
+const links=[...document.querySelectorAll('#nav a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+function onScroll(){
+  let i=secs.length-1;
+  for(let k=0;k<secs.length;k++){
+    if(secs[k].getBoundingClientRect().top>120){i=k-1;break}
+  }
+  if(i<0)i=0;
+  links.forEach(l=>l.classList.remove('active'));
+  if(links[i])links[i].classList.add('active');
+}
+document.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+links.forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();
+  document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:reduceMotion?'auto':'smooth'});
+  closeDrawer();
+}));
+const drawer=document.querySelector('aside'),burger=document.getElementById('navBurger'),backdrop=document.getElementById('navBackdrop');
+function closeDrawer(){drawer.classList.remove('open');backdrop.classList.remove('show')}
+burger.addEventListener('click',()=>{drawer.classList.toggle('open');backdrop.classList.toggle('show',drawer.classList.contains('open'))});
+backdrop.addEventListener('click',closeDrawer);
+window.addEventListener('beforeprint',()=>document.querySelectorAll('details.fold').forEach(d=>d.open=true));
+</script>
+</body>
+</html>

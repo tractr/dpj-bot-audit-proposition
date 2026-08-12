@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>TRACTR × Boscoville : plan d'amélioration DPJ-bot</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=DM+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+  /* ===== TRACTR NÉO-BRUT : design tokens (NE PAS modifier sauf demande explicite) ===== */
+  :root{
+    --bg:#FDFDFD; --bg-alt:#F4F4FF; --card-bg:#ffffff;
+    --ink:#1a1a1a; --ink2:#1a1a1a; --muted:#5a5a5a; --faint:#5a5a5a;
+    --acc:#0000ff; --acc-soft:#E8E8FF; --acc-mid:#6666ff;
+    --pink:#ffdcf0; --pink-strong:#ffb8dd; --green:#B3F4D1; --yellow:#FFF2C8; --blue-light:#8BD8FD;
+    --border:#1a1a1a; --border-light:#d0d0d0;
+    --v1ink:#0a7d3a; --v2ink:#9a6207;
+    --r:3px;
+    --sh:4px 4px 0 var(--border-light);
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:'DM Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --display:'Space Grotesk',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body::before{content:'';position:fixed;inset:0;opacity:.02;pointer-events:none;z-index:9999;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
+  .wrap{display:grid;grid-template-columns:264px 1fr;max-width:1180px;margin:0 auto;gap:0;background:var(--bg)}
+  aside{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;padding:28px 20px;
+    border-right:2px solid var(--border);background:var(--bg)}
+  aside .brand{display:flex;flex-direction:column;gap:9px}
+  aside .brand .sb-title{font-family:var(--display);font-size:13.5px;line-height:1.35}
+  aside .brand .sb-blue{color:var(--acc);font-weight:700}
+  aside .brand .sb-reg{color:var(--muted);font-weight:400}
+  aside .brand .sb-bold{color:var(--ink);font-weight:700}
+  nav{margin-top:26px;display:flex;flex-direction:column;gap:2px}
+  nav a{color:var(--ink);text-decoration:none;font-size:13px;padding:7px 10px;border:2px solid transparent;
+    border-radius:var(--r);transition:.12s;display:flex;gap:9px;align-items:center;font-weight:500}
+  nav a .n{color:var(--acc);font-family:var(--display);font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;min-width:16px}
+  nav a:hover{background:var(--acc-soft)}
+  nav a.active{background:var(--acc);color:#fff;border-color:var(--border);box-shadow:3px 3px 0 var(--border-light);font-weight:600}
+  nav a.active .n{color:#fff}
+  main{padding:28px 56px 90px;min-width:0}
+  .line-accent{width:56px;height:5px;background:var(--acc);margin:0 0 14px}
+  .cobrand{display:flex;align-items:center;gap:18px;margin:0 0 48px;padding:16px 20px;border:2px solid var(--border);border-radius:var(--r);box-shadow:var(--sh)}
+  .cobrand img{display:block;width:auto}
+  .cobrand .cb-tractr{height:26px}
+  .cobrand .cb-client{height:34px}
+  .cobrand .cb-x{font-family:var(--display);font-size:22px;color:var(--border-light);font-weight:400;line-height:1}
+  .cobrand .cb-word{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .eyebrow{display:inline-block;font-family:var(--display);font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#fff;background:var(--acc);border:2px solid var(--border);padding:5px 12px;border-radius:var(--r);box-shadow:3px 3px 0 var(--border-light);margin-bottom:16px}
+  h1{font-family:var(--display);font-size:34px;letter-spacing:-.03em;margin:0 0 10px;font-weight:700;line-height:1.1}
+  .tagline{color:var(--ink2);font-size:16px;margin:0 0 12px;max-width:62ch;line-height:1.5}
+  .meta{color:var(--muted);font-size:12.5px;font-family:var(--mono);max-width:none}
+  h2{font-family:var(--display);font-size:24px;letter-spacing:-.02em;margin:54px 0 6px;font-weight:700;line-height:1.15;display:flex;align-items:center;gap:12px}
+  h2 .h2n{font-family:var(--display);font-size:14px;font-weight:700;color:#fff;background:var(--acc);min-width:40px;height:32px;padding:0 6px;
+    display:flex;align-items:center;justify-content:center;border:2px solid var(--border);border-radius:var(--r);box-shadow:3px 3px 0 var(--border-light);flex:none}
+  h3{font-family:var(--display);font-size:18px;margin:28px 0 8px;font-weight:600;letter-spacing:-.01em}
+  p{margin:11px 0;max-width:74ch}
+  .lead{color:var(--muted);max-width:64ch;font-size:15.5px}
+  code{font-family:var(--mono);font-size:.85em;background:var(--acc-soft);padding:2px 6px;border-radius:3px;color:var(--acc);border:1px solid var(--acc-mid)}
+  .card{background:var(--card-bg);border:2px solid var(--border);border-radius:var(--r);padding:18px 20px;margin:16px 0;box-shadow:var(--sh)}
+  .card.c-blue{background:var(--acc-soft)}.card.c-pink{background:var(--pink)}.card.c-green{background:var(--green)}.card.c-yellow{background:var(--yellow)}
+  .grid{display:grid;gap:12px}
+  .grid>.card{margin:0}
+  .g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  .nav-burger{display:none;background:none;border:none;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px}
+  .nav-burger span{display:block;width:18px;height:2.5px;background:var(--ink);border-radius:2px}
+  .nav-label{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .nav-backdrop{display:none;position:fixed;inset:0;z-index:55;background:rgba(26,26,46,.35)}
+  @media(max-width:920px){.wrap{grid-template-columns:1fr}
+    .cobrand-wrap{position:sticky;top:0;z-index:50;background:var(--bg);margin:0 -22px 48px;padding:12px 22px 4px}
+    .cobrand{flex-wrap:wrap;row-gap:14px;position:relative;background:var(--card-bg);padding-left:74px;margin:0}
+    .nav-burger{display:flex;position:absolute;left:0;top:0;bottom:0;width:52px;border-right:2px solid var(--border);padding:0}
+    aside{position:fixed;left:0;top:0;z-index:60;height:100vh;width:272px;padding:28px 18px;background:var(--bg);transform:translateX(-110%);transition:transform .18s ease-out}
+    aside.open{transform:none}.nav-backdrop.show{display:block}
+    .g2,.g3{grid-template-columns:1fr}main{padding:28px 22px 90px}}
+  .pill{display:inline-block;font-family:var(--display);font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:var(--r);vertical-align:middle;letter-spacing:.04em;text-transform:uppercase;border:2px solid var(--border);white-space:nowrap}
+  .pill.v1{background:var(--green);color:#0a3d20}
+  .pill.v2{background:var(--yellow);color:#5c3d00}
+  .pill.man{background:#fff;color:var(--ink);border-style:dashed}
+  .pill.opt{background:var(--acc-soft);color:var(--acc)}
+  .pill.low{background:var(--green);color:#0a3d20}
+  .pill.mid{background:var(--yellow);color:#5c3d00}
+  .pill.high{background:var(--pink);color:#7a1340}
+  .pill.todo{background:#fff;color:var(--muted);border-style:dashed}
+  .feat{font-family:var(--display);font-size:11px;color:#fff;background:var(--acc);padding:1px 7px;border-radius:3px;font-weight:700;white-space:nowrap}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0;background:var(--card-bg);border:2px solid var(--border);box-shadow:var(--sh)}
+  th{font-family:var(--display);background:var(--acc);color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;text-align:left;padding:9px 13px;border-bottom:2px solid var(--border)}
+  td{text-align:left;padding:9px 13px;border-bottom:1.5px solid var(--border-light);vertical-align:top}
+  tbody tr:last-child td,table tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:var(--bg-alt)}
+  tr.total-row td{background:var(--acc-soft);border-top:2px solid var(--border);font-family:var(--display)}
+  .ok{color:var(--v1ink);font-weight:600}.warn{color:var(--v2ink);font-weight:600}.bad{color:#cc0000;font-weight:600}.mut{color:var(--muted)}
+  ul{margin:8px 0;padding-left:20px}li{margin:6px 0;max-width:74ch}
+  .callout{border:2px solid var(--border);background:var(--acc-soft);padding:14px 18px;border-radius:var(--r);margin:18px 0;font-size:14px;color:var(--ink2);box-shadow:var(--sh)}
+  .callout.v1{background:var(--green)}.callout.v2{background:var(--yellow)}.callout.warn{background:var(--pink)}
+  .callout b{color:var(--ink)}
+  .callout p{max-width:none}
+  /* stack de couches techniques (présentation de technos / briques) */
+  .stack{display:flex;flex-direction:column;gap:12px}
+  .layer{display:grid;grid-template-columns:170px 1fr;gap:18px;align-items:center;background:var(--card-bg);
+    border:2px solid var(--border);border-radius:var(--r);padding:14px 18px;box-shadow:var(--sh)}
+  .layer .tech{font-family:var(--display);font-weight:700;font-size:15px}
+  .layer .tech small{display:block;color:var(--muted);font-weight:500;font-family:var(--mono);font-size:11px;margin-top:3px}
+  .layer .tech .techlogo{width:36px;height:36px;border-radius:8px;display:block;margin-bottom:8px;border:2px solid var(--border);object-fit:contain;background:#fff}
+  .layer .why{font-size:13.5px;color:var(--muted);max-width:none}
+  .techlink{font-family:var(--display);font-size:11px;font-weight:600;color:var(--acc);text-decoration:none;border:1.5px solid var(--acc);border-radius:3px;padding:1px 7px;margin-left:6px;white-space:nowrap}
+  .techlink:hover{background:var(--acc-soft)}
+  /* scopebox : périmètre inclus / exclu (hors scope, post-MVP) */
+  .scopebox{border:2px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+  .scopebox.out{background:var(--yellow)}
+  .scopebox h3{margin:0 0 10px;font-size:15px}
+  /* phase : ligne de phasage (libellé | description | durée) */
+  .phase{display:grid;grid-template-columns:104px 1fr auto;gap:18px;align-items:start;padding:14px 0;border-bottom:1.5px solid var(--border-light)}
+  .phase:last-child{border-bottom:none}
+  .phase .p{font-family:var(--display);font-weight:700;color:var(--acc)}
+  .phase .d{font-family:var(--mono);font-size:12px;color:var(--ink);white-space:nowrap;background:var(--acc-soft);padding:3px 9px;border-radius:3px;border:2px solid var(--border)}
+  /* steps : étapes numérotées (prochaines étapes) */
+  .steps{display:grid;gap:14px;margin:16px 0}
+  .step{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:var(--card-bg);border:2px solid var(--border);border-radius:var(--r);padding:15px 18px;box-shadow:var(--sh)}
+  .step .num{width:36px;height:36px;border-radius:50%;background:var(--acc);color:#fff;font-family:var(--display);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;border:2px solid var(--border);box-shadow:2px 2px 0 var(--border-light);flex:none}
+  .step .txt{font-size:13.5px;color:var(--ink2);max-width:none}
+  .step .txt b{font-family:var(--display)}
+  .step .when{font-family:var(--mono);font-size:11px;color:var(--ink);background:var(--acc-soft);padding:4px 10px;border-radius:3px;border:2px solid var(--border);white-space:nowrap}
+  @media(max-width:560px){.step{grid-template-columns:auto 1fr}.step .when{grid-column:2;justify-self:start;margin-top:4px}}
+  /* total budget (encadré accent plein) */
+  .tot{display:flex;justify-content:space-between;align-items:baseline;background:var(--acc);color:#fff;
+    border:2px solid var(--border);border-radius:var(--r);padding:16px 22px;margin-top:16px;box-shadow:4px 4px 0 var(--border-light)}
+  .tot .mut{color:rgba(255,255,255,.82)}
+  .tot b{font-family:var(--display);font-size:19px;letter-spacing:-.01em}
+  .erd{font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre;overflow:auto;
+    background:var(--card-bg);border:2px solid var(--border);border-radius:var(--r);padding:18px;color:var(--ink2);box-shadow:var(--sh)}
+  .note{font-size:12.5px;color:var(--muted);font-style:italic;max-width:74ch}
+  .kpicards .card{margin:0;border-top:5px solid var(--acc)}
+  .kpicards .lbl{font-family:var(--display);font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--acc);text-transform:uppercase}
+  /* tiroir : option à la carte (devis à tiroir) */
+  .tiroir{border:2px solid var(--border);border-radius:var(--r);padding:16px 18px;margin:14px 0;background:var(--card-bg);box-shadow:var(--sh);display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start}
+  .tiroir .t{font-family:var(--display);font-weight:700;font-size:15px;margin-bottom:3px}
+  .tiroir .desc{font-size:13px;color:var(--muted)}
+  .tiroir .price{font-family:var(--display);font-size:13px;font-weight:700;color:#fff;white-space:nowrap;background:var(--acc);padding:6px 12px;border-radius:3px;border:2px solid var(--border);text-align:center}
+  .tiroir .price.todo{color:var(--muted);background:#fff;border:2px dashed var(--border-light)}
+  /* startbox : encadré "on commence ici" (point d'entrée mis en avant) */
+  .startbox{border:2px solid var(--border);border-radius:var(--r);box-shadow:5px 5px 0 var(--acc-mid);background:var(--acc-soft);padding:4px 22px 20px;margin:18px 0}
+  .ico{width:17px;height:17px;vertical-align:-3px;margin-right:8px;fill:none;stroke:var(--acc);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .facts{display:flex;gap:34px;flex-wrap:wrap;margin:16px 0}
+  .fact .n{font-family:var(--display);font-size:26px;font-weight:700;color:var(--acc);line-height:1.05}
+  .fact .l{font-size:12.5px;color:var(--muted);margin-top:4px;max-width:26ch}
+  .logos{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:12px;margin:10px 0 0;max-width:780px}
+  .logos .lg{background:#fff;border:2px solid var(--border);border-radius:3px;box-shadow:2px 2px 0 var(--border-light);height:58px;display:flex;align-items:center;justify-content:center;padding:10px;transition:.12s}
+  .logos a.lg:hover{box-shadow:3px 3px 0 var(--acc-mid);transform:translate(-1px,-1px)}
+  .logos .lg img{max-height:30px;max-width:100%;width:auto;object-fit:contain}
+  .team{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+  .tcard{display:grid;grid-template-columns:auto 1fr;gap:14px;background:var(--card-bg);border:2px solid var(--border);border-radius:3px;box-shadow:var(--sh);padding:16px}
+  .tcard .av{width:54px;height:54px;border-radius:50%;border:2px solid var(--acc);background:var(--acc-soft);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--acc);font-size:16px;overflow:hidden;flex:none}
+  .tcard .av img{width:100%;height:100%;object-fit:cover}
+  .tcard .nm{font-family:var(--display);font-weight:700;font-size:15px}
+  .tcard .rl{font-size:12px;color:var(--acc);font-weight:600;font-family:var(--display);margin:2px 0 6px}
+  .tcard .mail{display:block;font-size:11.5px;margin:-2px 0 7px;word-break:break-word}
+  .tcard .bio{font-size:12.5px;color:var(--muted);line-height:1.5}
+  .tcard .bio .role-line{display:block;margin-top:8px}
+  @media(max-width:920px){.team{grid-template-columns:1fr}}
+  a:focus-visible,nav a:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:2px}
+  .side-foot{margin-top:22px;padding-top:16px;border-top:2px solid var(--border);font-size:12px;font-family:var(--display)}
+  .side-foot a{display:block;color:var(--acc);text-decoration:none;font-weight:600;word-break:break-all}
+  .side-foot a:hover{text-decoration:underline}
+  main a{color:var(--acc);font-weight:600}
+  /* Navigation à deux niveaux : le document courant contient son propre sommaire. */
+  .docnav{display:flex;flex-direction:column;gap:9px;margin:18px 0 0}
+  .docgroup{background:#fff;border:2px solid var(--border);border-radius:var(--r);
+    box-shadow:2px 2px 0 var(--border-light);overflow:hidden}
+  .docgroup.is-current{box-shadow:3px 3px 0 var(--acc-mid)}
+  .doclink{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;
+    padding:10px 11px;color:var(--ink);background:#fff;text-decoration:none;font-family:var(--display);
+    font-size:11.5px;font-weight:700;line-height:1.35;transition:.12s}
+  .doclink[aria-current="page"]{background:var(--acc);color:#fff}
+  .doclink:not([aria-current="page"]):hover{background:var(--acc-soft)}
+  .doclink:active{transform:translate(1px,1px)}
+  .doc-index{font-variant-numeric:tabular-nums;color:var(--acc)}
+  .doclink[aria-current="page"] .doc-index{color:#fff}
+  .doclink::after{content:"+";font-size:16px;line-height:1;color:var(--acc)}
+  .docgroup.is-current>.doclink::after{content:"−";color:#fff}
+  nav.subnav{margin:0;padding:8px 8px 10px;gap:1px;background:#fff;border-top:2px solid var(--border)}
+  nav.subnav a{padding:7px 9px;border:0;border-radius:0;
+    font-size:12.5px;font-weight:500;box-shadow:none;background:transparent}
+  nav.subnav a:hover{background:var(--acc-soft)}
+  nav.subnav a.active{background:var(--acc-soft);color:var(--acc);box-shadow:none;font-weight:700}
+  nav.subnav a.active .n{color:var(--acc)}
+  @media print{.docnav{display:none}}
+  @media(max-width:920px){
+    main table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    main table>tbody{display:table;width:100%;border-collapse:collapse}
+  }
+  @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  .quotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin:14px 0}
+  .quote{display:flex;flex-direction:column;background:var(--card-bg);border:2px solid #D4A017;border-radius:var(--r);box-shadow:4px 4px 0 #F0DFA0;padding:16px 18px}
+  .quote p{font-size:13px;font-style:italic;color:var(--ink2);margin:0 0 12px;max-width:none;flex:1}
+  .qfoot{display:flex;align-items:center;gap:10px}
+  .qav{width:38px;height:38px;border-radius:50%;border:2px solid var(--border);background:var(--acc-soft);overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;color:var(--acc);font-size:13px}
+  .qav img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
+  .qmeta{display:flex;flex-direction:column;line-height:1.25}
+  .qn{font-family:var(--display);font-weight:700;font-size:12.5px;color:var(--ink)}
+  .qc{font-size:11px;color:var(--muted)}
+  @media(max-width:920px){.quotes{grid-template-columns:1fr}}
+  details.fold{border:2px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);margin:16px 0;background:var(--card-bg)}
+  details.fold>summary{cursor:pointer;list-style:none;padding:13px 18px;font-family:var(--display);font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--acc-soft)}
+  details.fold>summary::-webkit-details-marker{display:none}
+  details.fold>summary::after{content:"+";font-family:var(--display);font-size:18px;color:var(--acc);font-weight:700;line-height:1}
+  details.fold[open]>summary::after{content:"–"}
+  details.fold>summary:hover{background:#dcdcff}
+  details.fold .fold-body{padding:2px 18px 16px}
+  details.fold .fold-body>:first-child{margin-top:6px}
+  @media print{aside{display:none}.wrap{grid-template-columns:1fr}main{padding:0}body::before{display:none}
+    .card,.layer,.scopebox,.tiroir,table,.erd,.tot,.callout,details.fold,.startbox,.step{box-shadow:none}h2{break-after:avoid}table,.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav-backdrop" id="navBackdrop"></div>
+  <aside>
+    <div class="nav-label">Navigation</div>
+    <div class="docnav" role="navigation" aria-label="Documents de la restitution">
+      <div class="docgroup">
+        <a class="doclink" href="restitution-audit-dpj-bot.html"><span><span class="doc-index">1.&nbsp;</span>Audit de l'existant</span></a>
+      </div>
+      <div class="docgroup is-current">
+        <a class="doclink" href="proposition-dpj-bot.html" aria-current="page"><span><span class="doc-index">2.&nbsp;</span>Plan d'amélioration</span></a>
+        <nav id="nav" class="subnav" aria-label="Dans le plan d'amélioration">
+          <a href="#situation"><span class="n">2.1</span>Rappel de la situation actuelle</a>
+          <a href="#plan"><span class="n">2.2</span>Plan proposé</a>
+          <a href="#options"><span class="n">2.3</span>Options éventuelles</a>
+          <a href="#calendrier"><span class="n">2.4</span>Calendrier et besoins</a>
+          <a href="#commercial"><span class="n">2.5</span>Conditions commerciales</a>
+          <a href="#suite"><span class="n">2.6</span>Prochaines étapes</a>
+          <a href="#equipe"><span class="n">2.A</span>Annexe : équipe</a>
+          <a href="#faq"><span class="n">2.B</span>Annexe : FAQ</a>
+        </nav>
+      </div>
+    </div>
+    <div class="side-foot"><a href="mailto:pierre@tractr.net">pierre@tractr.net</a><a href="mailto:olivier@tractr.net">olivier@tractr.net</a></div>
+  </aside>
+
+  <main>
+    <div class="cobrand-wrap">
+    <div class="cobrand">
+      <button class="nav-burger" id="navBurger" aria-label="Ouvrir la navigation"><span></span><span></span><span></span></button>
+      <img class="cb-tractr" src="logo-tractr.png" alt="TRACTR">
+      <span class="cb-x">×</span>
+      <span class="cb-word">Boscoville</span>
+      <span class="eyebrow" style="margin:0 0 0 auto">Plan d'amélioration</span>
+    </div>
+    </div>
+    <h1>2. Plan d'amélioration</h1>
+    <p class="tagline">Quatre étapes pour sécuriser le service, corriger les réponses et préparer l'ouverture au public.</p>
+    <p class="meta">TRACTR pour Boscoville · juillet 2026 · montants en dollars canadiens, hors taxes</p>
+    <div class="line-accent" style="margin:20px 0 0"></div>
+
+    <!-- ============ 1 SITUATION ============ -->
+    <h2 id="situation"><span class="h2n">2.1</span>Rappel de la situation actuelle</h2>
+    <p class="lead">La base technique est récupérable, mais trois problèmes empêchent l'ouverture au public.</p>
+
+    <h3>Les trois blocages à lever</h3>
+    <div class="grid g3 kpicards">
+      <div class="card"><div class="lbl">Blocage 1</div><b style="font-size:17px">Contenu modifiable par le public</b><p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Du contenu externe peut être ajouté puis présenté comme provenant du manuel.</p></div>
+      <div class="card"><div class="lbl">Blocage 2</div><b style="font-size:17px">Découpage inopérant</b><p style="margin:6px 0 0;font-size:13px;color:var(--muted)">La cause de la confusion entre notions voisines est mesurée.</p></div>
+      <div class="card"><div class="lbl">Blocage 3</div><b style="font-size:17px">Conformité absente</b><p style="margin:6px 0 0;font-size:13px;color:var(--muted)">Confidentialité, transparence sur l'IA et situations de danger ne sont pas traitées.</p></div>
+    </div>
+
+    <div class="callout warn"><svg class="ico" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><b>À faire en priorité :</b> empêcher l'ajout de contenu par le public et plafonner les dépenses.</div>
+
+    <!-- ============ 2 PLAN ============ -->
+    <h2 id="plan"><span class="h2n">2.2</span>Plan proposé</h2>
+    <p class="lead">Quatre étapes successives. Chaque étape produit un résultat utilisable avant de lancer la suivante.</p>
+
+    <table>
+      <tr><th scope="col">Étape</th><th scope="col">Résultat livré</th><th scope="col">Effort</th><th scope="col">Budget</th><th scope="col">Quand</th></tr>
+      <tr><td><b>1. Protéger et cadrer</b></td><td>Écriture publique fermée, coûts et accès bornés, requêtes et citations validées. Jeu de 30 questions préparé avec votre expert.</td><td>11,5 h</td><td><b>1 725&nbsp;$</b><br><span class="note">Prix fixe</span></td><td>Semaine 1</td></tr>
+      <tr><td><b>2. Mesurer et réparer</b></td><td>Bancs de mesure, structure du PDF reconstruite, recherche réparée, abstention calibrée et réponses reproductibles.</td><td>27 h</td><td><b>4 050&nbsp;$</b><br><span class="note">Plafond</span></td><td>Semaine 2</td></tr>
+      <tr><td><b>3. Sécuriser et fiabiliser</b></td><td>Sécurité, conformité, gestion des erreurs, accessibilité, mobile et historique corrigés.</td><td>26,5 h</td><td><b>3 975&nbsp;$</b><br><span class="note">Plafond</span></td><td>Semaine 3</td></tr>
+      <tr><td><b>4. Préparer l'exploitation</b></td><td>Journaux, alertes, supervision, migrations, intégration continue et rapport final avant-après.</td><td>13 h</td><td><b>1 950&nbsp;$</b><br><span class="note">Plafond</span></td><td>Semaine 4</td></tr>
+      <tr class="total-row"><td colspan="2"><b>Total du plan proposé</b></td><td><b>78 h</b></td><td><b>11 700&nbsp;$ CA</b></td><td>4 semaines</td></tr>
+    </table>
+    <p class="note">Les étapes 2 à 4 sont facturées au temps réellement passé, à 150&nbsp;$ CA de l'heure, sans dépasser leur plafond sans accord écrit.</p>
+
+    <!-- ============ 3 OPTIONS ============ -->
+    <h2 id="options"><span class="h2n">2.3</span>Options éventuelles</h2>
+    <p class="lead">Ces options ne font pas partie des 11 700&nbsp;$. Elles ne sont ajoutées que si le besoin se confirme.</p>
+
+    <table>
+      <tr><th scope="col">Option</th><th scope="col">Quand la décider</th><th scope="col">Estimation</th></tr>
+      <tr><td><b>Recherche exacte par article</b></td><td>Si les questions juridiques restent mal servies après l'étape 2</td><td>225&nbsp;$</td></tr>
+      <tr><td><b>Modèle de reclassement spécialisé</b></td><td>Si la précision reste sous la cible après l'étape 2</td><td>375&nbsp;$</td></tr>
+      <tr><td><b>Routage par fiche</b></td><td>Si la confusion entre notions voisines persiste</td><td>600&nbsp;$</td></tr>
+      <tr><td><b>Migration du modèle d'encodage</b></td><td>Seulement si le gain de rappel mesuré dépasse 3 points</td><td>300 à 1 200&nbsp;$</td></tr>
+      <tr><td><b>Tableau de bord d'exploitation</b></td><td>Après l'ouverture, si les alertes ne suffisent pas</td><td>525&nbsp;$</td></tr>
+      <tr><td><b>Ré-indexation sans coupure</b></td><td>Quand le corpus devra évoluer souvent</td><td>375&nbsp;$</td></tr>
+      <tr><td><b>Comparatif de modèles de génération</b></td><td>Après stabilisation du corpus et de la recherche</td><td>225&nbsp;$</td></tr>
+      <tr><td><b>Consolidation post-ouverture</b></td><td>Après l'ouverture</td><td>4 050&nbsp;$</td></tr>
+      <tr><td><b>Graphe des renvois entre fiches</b></td><td>Après le routage par fiche</td><td>600&nbsp;$</td></tr>
+      <tr><td><b>Sources postérieures à 2010</b></td><td>Si Boscoville décide d'actualiser le corpus</td><td>1 500&nbsp;$</td></tr>
+      <tr><td><b>Historique serveur</b></td><td>Après validation du volet vie privée</td><td>1 125&nbsp;$</td></tr>
+    </table>
+
+    <!-- ============ 4 CALENDRIER ============ -->
+    <h2 id="calendrier"><span class="h2n">2.4</span>Calendrier et besoins</h2>
+    <p class="lead">Date de démarrage à définir conjointement.</p>
+
+    <table>
+      <tr><th scope="col">Période</th><th scope="col">Travail prévu</th></tr>
+      <tr><td><b>Semaine 1</b></td><td>Protéger le service et cadrer les 30 questions avec votre expert.</td></tr>
+      <tr><td><b>Semaine 2</b></td><td>Mesurer la situation, puis réparer le corpus, la recherche et l'abstention.</td></tr>
+      <tr><td><b>Semaine 3</b></td><td>Corriger la sécurité, la conformité, la fiabilité, l'accessibilité et l'usage sur téléphone.</td></tr>
+      <tr><td><b>Semaine 4</b></td><td>Préparer l'exploitation, mesurer les gains et réaliser la recette avec votre expert.</td></tr>
+      <tr class="total-row"><td><b>À partir de la semaine 5</b></td><td><b>Ouverture envisageable si les seuils et le volet juridique sont validés.</b></td></tr>
+    </table>
+
+    <div class="callout warn"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><b>Le juridique fixe la date d'ouverture.</b> L'évaluation de la vie privée et l'autorisation du logotype peuvent dépasser six semaines. À lancer dès le début.</div>
+
+    <h3>Ce dont nous avons besoin</h3>
+    <table>
+      <tr><th scope="col">Accès</th><th scope="col">Niveau</th><th scope="col">Quand</th></tr>
+      <tr><td>Compte du fournisseur de modèle</td><td>Administration de la facturation</td><td><b>En priorité</b>, le plafond de dépense est la seule protection immédiate</td></tr>
+      <tr><td>Dépôt de code</td><td>Écriture et administration</td><td>Démarrage</td></tr>
+      <tr><td>Hébergement applicatif</td><td>Membre du projet</td><td>Démarrage</td></tr>
+      <tr><td>Base de données</td><td>Propriétaire</td><td>Démarrage</td></tr>
+      <tr><td>Contact juridique et responsable des communications</td><td>Sans objet</td><td><b>Immédiat</b></td></tr>
+      <tr><td>PDF source, édition exacte et droits de rediffusion</td><td>Sans objet</td><td>Semaine 1</td></tr>
+      <tr><td>Expert du domaine</td><td>Sans objet</td><td>Semaine 1</td></tr>
+    </table>
+
+    <h3>La sollicitation de votre expert, 12 à 16 heures</h3>
+    <p>Aucun accès technique requis. Nous fournissons un tableau prérempli à valider ou corriger.</p>
+    <table>
+      <tr><th scope="col">Jalon</th><th scope="col">Format</th><th scope="col">Durée</th><th scope="col">Objet</th></tr>
+      <tr><td><b>Cadrage</b></td><td>Visioconférence</td><td>2 h</td><td>Valider les 30 questions : réalisme, notions réellement confondues sur le terrain, exceptions, manques</td></tr>
+      <tr><td><b>Vérité terrain</b></td><td>Asynchrone</td><td>4 h</td><td>Pages, fiches et articles attendus, éléments obligatoires de chaque réponse, cas où le système doit se taire</td></tr>
+      <tr><td><b>Revue</b></td><td>Asynchrone et visioconférence</td><td>6 h</td><td>Noter 30 réponses : exactitude, nuances, citations, risque d'usage</td></tr>
+      <tr><td><b>Acceptation</b></td><td>Visioconférence</td><td>2 h</td><td>Signature des seuils, validation des avertissements, arbitrage sur la date d'édition du manuel</td></tr>
+    </table>
+    <p class="note">Sans expert sous deux semaines, nous produisons une vérité terrain provisoire. Les premiers résultats restent alors indicatifs.</p>
+
+    <!-- ============ 5 COMMERCIAL ============ -->
+    <h2 id="commercial"><span class="h2n">2.5</span>Conditions commerciales</h2>
+    <table>
+      <tr><th scope="col">Point</th><th scope="col">Condition</th></tr>
+      <tr><td><b>Prix</b></td><td>Étape 1 au prix fixe de 1 725&nbsp;$ CA. Étapes 2 à 4 au temps passé, à 150&nbsp;$ CA de l'heure, avec les plafonds du plan.</td></tr>
+      <tr><td><b>Facturation</b></td><td>Acompte à la commande, solde à la livraison.</td></tr>
+      <tr><td><b>Dépassement</b></td><td>Aucune heure au-delà d'un plafond sans accord écrit.</td></tr>
+      <tr><td><b>Suivi</b></td><td>Point hebdomadaire sur l'avancement, le temps passé et les décisions à prendre.</td></tr>
+      <tr><td><b>Qualité</b></td><td>Revue interne, tests ciblés, recette conjointe et correction des anomalies bloquantes.</td></tr>
+      <tr><td><b>Propriété</b></td><td>Le code et les outils de mesure livrés appartiennent à Boscoville.</td></tr>
+      <tr><td><b>Ressources TRACTR</b></td><td>Notre code et nos ressources techniques préexistantes sont fournis sans frais.</td></tr>
+      <tr><td><b>Fin du mandat</b></td><td>Préavis de 30 jours. Tout élargissement du périmètre passe par un avenant.</td></tr>
+    </table>
+
+    <h3>À la charge de Boscoville</h3>
+    <table>
+      <tr><th scope="col">Sujet</th><th scope="col">Décision ou dépense</th></tr>
+      <tr><td><b>Vie privée</b></td><td>Évaluation des facteurs relatifs à la vie privée et entente avec le fournisseur de modèle.</td></tr>
+      <tr><td><b>Logotype</b></td><td>Autorisation d'usage du logotype gouvernemental, ou retrait.</td></tr>
+      <tr><td><b>Infrastructure</b></td><td>Abonnements d'hébergement, de base de données et de fournisseur de modèle.</td></tr>
+      <tr><td><b>Contenu</b></td><td>Décision sur l'édition du manuel et droits de rediffusion du PDF.</td></tr>
+    </table>
+    <p class="note">Prévoir environ 12 à 16 heures de disponibilité côté Boscoville, principalement pour l'expert du domaine.</p>
+
+    <!-- ============ 6 SUITE ============ -->
+    <h2 id="suite"><span class="h2n">2.6</span>Prochaines étapes</h2>
+
+    <table>
+      <tr><th scope="col">Action</th><th scope="col">Quand</th></tr>
+      <tr><td><b>1. Plafonner les dépenses du fournisseur de modèle.</b></td><td>Aujourd'hui</td></tr>
+      <tr><td><b>2. Ouvrir les dossiers vie privée, sous-traitance et logotype.</b></td><td>Cette semaine</td></tr>
+      <tr><td><b>3. Valider l'étape 1 : 11,5 h, 1 725&nbsp;$ CA.</b></td><td>À la commande</td></tr>
+      <tr><td><b>4. Confirmer les étapes suivantes après la première mesure.</b></td><td>Semaine 2</td></tr>
+    </table>
+
+    <div class="callout v1"><svg class="ico" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><b>Pour démarrer :</b> contactez Pierre Cabrière, <a href="mailto:pierre@tractr.net">pierre@tractr.net</a>, et Olivier Tarbès, <a href="mailto:olivier@tractr.net">olivier@tractr.net</a>.</div>
+
+    <!-- ============ ANNEXE A ÉQUIPE ============ -->
+    <h2 id="equipe"><span class="h2n">2.A</span>Annexe : l'équipe</h2>
+    <p class="lead">L'équipe qui a audité le dépôt pilotera la reprise.</p>
+    <div class="team">
+      <div class="tcard"><div class="av"><img src="assets/av-pierre.png" alt="Pierre Cabrière" onerror="this.style.display='none';this.parentElement.textContent='PC'"></div><div><div class="nm">Pierre Cabrière</div><div class="rl">CTO</div><a class="mail" href="mailto:pierre@tractr.net">pierre@tractr.net</a><div class="bio">10+ ans. Back-end et frontend modernes, interfaces riches en données, intégrations. <span class="role-line"><b>Sur DPJ-bot :</b> A mené l'examen du dépôt et la reproduction des constats. Pilote les correctifs et les bancs de mesure.</span></div></div></div>
+      <div class="tcard"><div class="av"><img src="assets/av-olivier.png" alt="Olivier Tarbès" onerror="this.style.display='none';this.parentElement.textContent='OT'"></div><div><div class="nm">Olivier Tarbès</div><div class="rl">Co-fondateur · CPO</div><a class="mail" href="mailto:olivier@tractr.net">olivier@tractr.net</a><div class="bio">15+ ans en stratégie produit, UX/UI, conception centrée utilisateur. <span class="role-line"><b>Sur DPJ-bot :</b> Arbitrages produit et conformité, interface avec vous et avec votre expert du domaine.</span></div></div></div>
+    </div>
+
+    <!-- ============ ANNEXE B FAQ ============ -->
+    <h2 id="faq"><span class="h2n">2.B</span>Annexe : FAQ</h2>
+    <details class="fold"><summary>À qui appartient le code ?</summary><div class="fold-body"><p>À vous. Le code, les 30 questions et les bancs de mesure restent sur votre dépôt, sans dépendance propriétaire.</p></div></details>
+    <details class="fold"><summary>Pourquoi mesurer avant de corriger ?</summary><div class="fold-body"><p>Pour établir une ligne de base, prouver chaque gain et déclencher les options uniquement si les chiffres le justifient.</p></div></details>
+    <details class="fold"><summary>Pourquoi commencer par la protection ?</summary><div class="fold-body"><p>Parce qu'elle ferme immédiatement deux risques actifs : dépenses non bornées et contenu modifiable par le public.</p></div></details>
+    <details class="fold"><summary>Et si notre expert n'est pas disponible ?</summary><div class="fold-body"><p>Les travaux peuvent commencer avec une vérité terrain provisoire. Les premiers résultats restent indicatifs jusqu'à sa validation.</p></div></details>
+    <details class="fold"><summary>Faut-il changer de modèle d'encodage ?</summary><div class="fold-body"><p>Pas avant d'avoir réparé le corpus et mesuré le résultat. Nous proposons de migrer seulement si le gain de rappel dépasse 3 points.</p></div></details>
+    <details class="fold"><summary>Qu'est-ce qui fixe la date d'ouverture ?</summary><div class="fold-body"><p>Surtout le volet juridique : vie privée et autorisation du logotype peuvent dépasser six semaines.</p></div></details>
+    <details class="fold"><summary>Que faire du manuel de 2010 ?</summary><div class="fold-body"><p>Assumer un corpus daté et le signaler, ou prévoir un modèle multi-sources. Dans les deux cas, l'édition doit être visible.</p></div></details>
+    <details class="fold"><summary>Et si une étape dépasse l'estimation ?</summary><div class="fold-body"><p>Aucune heure supplémentaire n'est engagée sans accord écrit.</p></div></details>
+  </main>
+</div>
+
+<script>
+/* Navigation : surligne l'entrée active au scroll + scroll doux au clic. NE PAS modifier. */
+const links=[...document.querySelectorAll('#nav a')];
+const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+function onScroll(){
+  let i=secs.length-1;
+  for(let k=0;k<secs.length;k++){
+    if(secs[k].getBoundingClientRect().top>120){i=k-1;break}
+  }
+  if(i<0)i=0;
+  links.forEach(l=>l.classList.remove('active'));
+  if(links[i])links[i].classList.add('active');
+}
+document.addEventListener('scroll',onScroll,{passive:true});
+onScroll();
+const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+links.forEach(a=>a.addEventListener('click',e=>{
+  e.preventDefault();
+  document.querySelector(a.getAttribute('href')).scrollIntoView({behavior:reduceMotion?'auto':'smooth'});
+  closeDrawer();
+}));
+const drawer=document.querySelector('aside'),burger=document.getElementById('navBurger'),backdrop=document.getElementById('navBackdrop');
+function closeDrawer(){drawer.classList.remove('open');backdrop.classList.remove('show')}
+burger.addEventListener('click',()=>{drawer.classList.toggle('open');backdrop.classList.toggle('show',drawer.classList.contains('open'))});
+backdrop.addEventListener('click',closeDrawer);
+window.addEventListener('beforeprint',()=>document.querySelectorAll('details.fold').forEach(d=>d.open=true));
+</script>
+</body>
+</html>
